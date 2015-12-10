@@ -19,7 +19,7 @@
 <meta property="og:image" content="http://i12.tietuku.com/8fc0d5144113cb2c.jpg">
 <meta property="og:image" content="http://i12.tietuku.com/c4ca262dd51e9e78.png">
 <meta property="og:image" content="http://i5.tietuku.com/3ebc7c43eb073afb.png">
-<meta property="og:updated_time" content="2015-12-10T17:38:29.000Z">
+<meta property="og:updated_time" content="2015-12-10T17:41:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="打点系统分析">
 <meta name="twitter:description" content="Android PAJK_Analysis打点系统分析
@@ -73,7 +73,7 @@
         <section id="main"><article id="post-Android APJK_Analysis打点系统分析" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/12/11/Android APJK_Analysis打点系统分析/" class="article-date">
-  <time datetime="2015-12-10T17:38:29.000Z" itemprop="datePublished">2015-12-11</time>
+  <time datetime="2015-12-10T17:41:23.000Z" itemprop="datePublished">2015-12-11</time>
 </a>
     
   </div>
@@ -121,13 +121,8 @@
 
 <h4 id="3_uFF09_u9000_u51FA_u7528_u6237_u540E_uFF0C1K_u4EE5_u5185_u672C_u5730_u7F13_u5B58_u6570_u636E_u672A_u4E0A_u4F20"><a href="#3_uFF09_u9000_u51FA_u7528_u6237_u540E_uFF0C1K_u4EE5_u5185_u672C_u5730_u7F13_u5B58_u6570_u636E_u672A_u4E0A_u4F20" class="headerlink" title="3）退出用户后，1K以内本地缓存数据未上传"></a>3）退出用户后，1K以内本地缓存数据未上传</h4><font color="#9B30FF">解决方案：退出登录之后执行清空缓存</font>
 
-<pre><code>private void doLogout(){
-    if (getActivity() != null){
-        new CacheManager().flushCache(getActivity());
-    }
-    ...
-}
-</code></pre><h4 id="4_uFF09_u7528_u6237_u90E8_u5206api_u8BF7_u6C42_u4E3A_u540E_u53F0service_u6216h5_u63A5_u53E3"><a href="#4_uFF09_u7528_u6237_u90E8_u5206api_u8BF7_u6C42_u4E3A_u540E_u53F0service_u6216h5_u63A5_u53E3" class="headerlink" title="4）用户部分api请求为后台service或h5接口"></a>4）用户部分api请求为后台service或h5接口</h4><font color="#9B30FF">解决方案：统计方法基数 剔除后台接口或纯H5接口用户</font>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">void</span> <span class="title">doLogout</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (getActivity() != <span class="keyword">null</span>)&#123;</span><br><span class="line">        <span class="keyword">new</span> CacheManager().flushCache(getActivity());</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="4_uFF09_u7528_u6237_u90E8_u5206api_u8BF7_u6C42_u4E3A_u540E_u53F0service_u6216h5_u63A5_u53E3"><a href="#4_uFF09_u7528_u6237_u90E8_u5206api_u8BF7_u6C42_u4E3A_u540E_u53F0service_u6216h5_u63A5_u53E3" class="headerlink" title="4）用户部分api请求为后台service或h5接口"></a>4）用户部分api请求为后台service或h5接口</h4><font color="#9B30FF">解决方案：统计方法基数 剔除后台接口或纯H5接口用户</font>
 
 <h4 id="5_uFF09_u4E3B_u5BA2_u4E0E_u5916_u90E8_u533B_u751F_u65E5_u6D3B_u603B_u91CF_u5B58_u5728_u4E00_u5B9A_u5DEE_u8DDD"><a href="#5_uFF09_u4E3B_u5BA2_u4E0E_u5916_u90E8_u533B_u751F_u65E5_u6D3B_u603B_u91CF_u5B58_u5728_u4E00_u5B9A_u5DEE_u8DDD" class="headerlink" title="5）主客与外部医生日活总量存在一定差距"></a>5）主客与外部医生日活总量存在一定差距</h4><p><br></p>
 <h2 id="uFF08_u56DB_uFF09_u5C55_u671B"><a href="#uFF08_u56DB_uFF09_u5C55_u671B" class="headerlink" title="（四）展望"></a>（四）展望</h2><h3 id="1_u3001_u8C03_u6574_u6574_u4F53_u6280_u672F_u65B9_u6848"><a href="#1_u3001_u8C03_u6574_u6574_u4F53_u6280_u672F_u65B9_u6848" class="headerlink" title="1、调整整体技术方案"></a>1、调整整体技术方案</h3><ul>
@@ -141,24 +136,14 @@
 </ul>
 <font color="#3399ff"><code>目前:</code></font>
 
-<pre><code>Map&lt;String,Object&gt; kv = new HashMap&lt;String,Object&gt;();
-kv.put(&quot;serviceType&quot;,getServiceType() == null ? &quot;&quot; : getServiceType().name());
-kv.put(&quot;DepartName&quot;,null == getDoctorInfo() ? &quot;&quot; : getDoctorInfo().deptName);
-kv.put(&quot;Doctor&quot;, null == getDoctorInfo() ? &quot;&quot; : getDoctorInfo().name);
-EventHelper.onEventMap(getActivity(), AnalyzeConstants.DOCTOR_ASK_NORMAL, null, kv);
-</code></pre><font color="#3399ff"><code>期望:</code></font>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Map</span>&lt;<span class="built_in">String</span>,<span class="built_in">Object</span>&gt; kv = <span class="keyword">new</span> HashMap&lt;<span class="built_in">String</span>,<span class="built_in">Object</span>&gt;();</span><br><span class="line">   kv.put(<span class="string">"serviceType"</span>,getServiceType() == <span class="keyword">null</span> ? <span class="string">""</span> : getServiceType().name());</span><br><span class="line">   kv.put(<span class="string">"DepartName"</span>,<span class="keyword">null</span> == getDoctorInfo() ? <span class="string">""</span> : getDoctorInfo().deptName);</span><br><span class="line">   kv.put(<span class="string">"Doctor"</span>, <span class="keyword">null</span> == getDoctorInfo() ? <span class="string">""</span> : getDoctorInfo().name);</span><br><span class="line">   EventHelper.onEventMap(getActivity(), AnalyzeConstants.DOCTOR_ASK_NORMAL, <span class="keyword">null</span>, kv);</span><br></pre></td></tr></table></figure>
+<font color="#3399ff"><code>期望:</code></font>
 
-<pre><code>EventHelper.onEvent(mContext, AnalyzeConstants.DOCTOR_ASK_NORMAL, null,
-        new Pair&lt;String, Object&gt;(&quot;serviceType&quot;, getServiceType().name()),
-        new Pair&lt;String, Object&gt;(&quot;DepartName&quot;, getDoctorInfo().deptName),
-        new Pair&lt;String, Object&gt;(&quot;Doctor&quot;, getDoctorInfo().name);
-</code></pre><font color="#3399ff"><code>进阶:</code></font>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">EventHelper.onEvent(mContext, AnalyzeConstants.DOCTOR_ASK_NORMAL, <span class="keyword">null</span>,</span><br><span class="line">		<span class="keyword">new</span> Pair&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt;(<span class="string">"serviceType"</span>, getServiceType().name()),</span><br><span class="line">		<span class="keyword">new</span> Pair&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt;(<span class="string">"DepartName"</span>, getDoctorInfo().deptName),</span><br><span class="line">		<span class="keyword">new</span> Pair&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt;(<span class="string">"Doctor"</span>, getDoctorInfo().name);</span><br></pre></td></tr></table></figure>
+<font color="#3399ff"><code>进阶:</code></font>
 
-<pre><code>EventHelper.onEvent(mContext, AnalyzeConstants.DOCTOR_ASK_NORMAL, null,
-        &quot;serviceType&quot; + getServiceType().name()),
-        &quot;DepartName&quot; + getDoctorInfo().deptName),
-        &quot;Doctor:&quot; + getDoctorInfo().name);
-</code></pre>
+<figure class="highlight sml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">EventHelper</span>.onEvent(mContext, <span class="type">AnalyzeConstants</span>.<span class="type">DOCTOR_ASK_NORMAL</span>, null,</span><br><span class="line">		<span class="string">"serviceType"</span> + getServiceType<span class="literal">()</span>.name<span class="literal">()</span>),</span><br><span class="line">		<span class="string">"DepartName"</span> + getDoctorInfo<span class="literal">()</span>.deptName),</span><br><span class="line">		<span class="string">"Doctor:"</span> + getDoctorInfo<span class="literal">()</span>.name);</span><br></pre></td></tr></table></figure>
+
       
     </div>
     <footer class="article-footer">
