@@ -64,7 +64,7 @@
     <article id="post-Android APJK_Analysis打点系统分析" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/12/11/Android APJK_Analysis打点系统分析/" class="article-date">
-  <time datetime="2015-12-10T17:27:13.000Z" itemprop="datePublished">2015-12-11</time>
+  <time datetime="2015-12-10T17:38:29.000Z" itemprop="datePublished">2015-12-11</time>
 </a>
     
   </div>
@@ -85,30 +85,25 @@
       
         <h1 id="Android_PAJK_Analysis_u6253_u70B9_u7CFB_u7EDF_u5206_u6790"><a href="#Android_PAJK_Analysis_u6253_u70B9_u7CFB_u7EDF_u5206_u6790" class="headerlink" title="Android PAJK_Analysis打点系统分析"></a>Android PAJK_Analysis打点系统分析</h1><p><br></p>
 <h2 id="uFF08_u4E00_uFF09_u9700_u6C42"><a href="#uFF08_u4E00_uFF09_u9700_u6C42" class="headerlink" title="（一）需求"></a>（一）需求</h2><h3 id="1_u3001_u9875_u9762_u6253_u70B9_u7F3A_u5931"><a href="#1_u3001_u9875_u9762_u6253_u70B9_u7F3A_u5931" class="headerlink" title="1、页面打点缺失"></a>1、页面打点缺失</h3><p>经确认，原产品需求中，不需要进行SDO的页面统计。</p>
-<font color="#9B30FF">解决方案：所有页面打点重新调用SDO内的方法</font>
-
-<pre><code>public class SDOAnalyzeAgentInterface {
-    public static boolean mNeedToOpen = false;
-
-    ...
-
-    public static void onResume(Context context) {
-        SDOAnalyzeAgent.onResume(context);
-    }
-}
-</code></pre><font color="#9B30FF">合并调用至EventHelper.onResume()；</font>
+<font color="#9B30FF">解决方案：所有页面打点重新调用SDO内的方法</font><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SDOAnalyzeAgentInterface</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> mNeedToOpen = <span class="keyword">false</span>;</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">onResume</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">		SDOAnalyzeAgent.onResume(context);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><br><font color="#9B30FF">合并调用至EventHelper.onResume()；</font>
 
 <p><br></p>
 <h2 id="uFF08_u4E8C_uFF09_u4EE3_u7801"><a href="#uFF08_u4E8C_uFF09_u4EE3_u7801" class="headerlink" title="（二）代码"></a>（二）代码</h2><h3 id="1_u3001_u4E3B_u5BA2_u5B58_u5728_u591A_u5904_u6253_u70B9_u4EE3_u7801_u4E0D_u540C_u8C03_u7528"><a href="#1_u3001_u4E3B_u5BA2_u5B58_u5728_u591A_u5904_u6253_u70B9_u4EE3_u7801_u4E0D_u540C_u8C03_u7528" class="headerlink" title="1、主客存在多处打点代码不同调用"></a>1、主客存在多处打点代码不同调用</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">TCAgent</span><span class="class">.onEvent</span>(<span class="tag">mContext</span>,</span><br><span class="line">        <span class="tag">com</span><span class="class">.pingan</span><span class="class">.papd</span><span class="class">.datacenter</span><span class="class">.Constants</span><span class="class">.HEALTH_DAILY_POP_ACTIVITY</span>,</span><br><span class="line">        <span class="tag">com</span><span class="class">.pingan</span><span class="class">.papd</span><span class="class">.datacenter</span><span class="class">.Constants</span><span class="class">.HEALTH_DAILY_TASK_CLICK</span>,</span><br><span class="line">        <span class="tag">map</span>);</span><br><span class="line"><span class="tag">SDOAnalyzeAgentInterface</span><span class="class">.onEventLabel</span>(<span class="tag">mContext</span>,</span><br><span class="line">        <span class="tag">com</span><span class="class">.pingan</span><span class="class">.papd</span><span class="class">.datacenter</span><span class="class">.Constants</span><span class="class">.HEALTH_DAILY_POP_ACTIVITY</span>,</span><br><span class="line">        <span class="tag">com</span><span class="class">.pingan</span><span class="class">.papd</span><span class="class">.datacenter</span><span class="class">.Constants</span><span class="class">.HEALTH_DAILY_TASK_CLICK</span>);</span><br></pre></td></tr></table></figure>
 <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GDT<span class="built_in">CAgent</span><span class="variable">.onEvent</span>(<span class="keyword">this</span>, <span class="string">"用户登陆"</span>, <span class="string">"登陆失败"</span>);</span><br><span class="line">T<span class="built_in">CAgent</span><span class="variable">.onEvent</span>(context, <span class="string">"userRegisterFail"</span>);</span><br><span class="line">SDOAnalyzeAgentInterface<span class="variable">.onEvent</span>(context, <span class="string">"userRegisterFail"</span>);</span><br></pre></td></tr></table></figure>
-<font color="#9B30FF">解决方案： 统一调用</font><br><img src="http://i12.tietuku.com/0b1fc39d9cc617ff.jpg" alt="123"><br><br>将 EventHelper 移到 PAJK_Analysis中<br><br><img src="http://i12.tietuku.com/8fc0d5144113cb2c.jpg" alt="32"><br><br>### 2、现有上传逻辑<br><img src="http://i12.tietuku.com/c4ca262dd51e9e78.png" alt="33"><br><font color="#9B30FF">可进行优化：<br><em> 增大本地缓存
+<font color="#9B30FF">解决方案： 统一调用</font>
+
+<p><img src="http://i12.tietuku.com/0b1fc39d9cc617ff.jpg" alt=""></p>
+<p>将 EventHelper 移到 PAJK_Analysis中</p>
+<p><img src="http://i12.tietuku.com/8fc0d5144113cb2c.jpg" alt=""></p>
+<h3 id="2_u3001_u73B0_u6709_u4E0A_u4F20_u903B_u8F91"><a href="#2_u3001_u73B0_u6709_u4E0A_u4F20_u903B_u8F91" class="headerlink" title="2、现有上传逻辑"></a>2、现有上传逻辑</h3><p><img src="http://i12.tietuku.com/c4ca262dd51e9e78.png" alt=""></p>
+<font color="#9B30FF">可进行优化：<br><em> 增大本地缓存
 </em> 增加事件类型<br><em> context提取数据优减
 </em> 等等<br></font>
 
 <p><br></p>
 <h2 id="uFF08_u4E09_uFF09_u7EBF_u4E0A_u95EE_u9898"><a href="#uFF08_u4E09_uFF09_u7EBF_u4E0A_u95EE_u9898" class="headerlink" title="（三）线上问题"></a>（三）线上问题</h2><h3 id="1_u3001_u8986_u76D6_u7387_u95EE_u9898"><a href="#1_u3001_u8986_u76D6_u7387_u95EE_u9898" class="headerlink" title="1、覆盖率问题"></a>1、覆盖率问题</h3><font color="#CD3278"><br><code>覆盖率 :（打点当日记录Uid）/（用户api请求数）</code><br></font>
 
-<p><img src="http://i5.tietuku.com/3ebc7c43eb073afb.png" alt="44"></p>
+<p><img src="http://i5.tietuku.com/3ebc7c43eb073afb.png" alt=""></p>
 <h4 id="1_uFF09_u672C_u5730_u7F13_u5B58_u4E0D_u8DB31K_uFF0C_u65E0_u6CD5_u89E6_u53D1_u4E0A_u4F20"><a href="#1_uFF09_u672C_u5730_u7F13_u5B58_u4E0D_u8DB31K_uFF0C_u65E0_u6CD5_u89E6_u53D1_u4E0A_u4F20" class="headerlink" title="1）本地缓存不足1K，无法触发上传"></a>1）本地缓存不足1K，无法触发上传</h4><font color="#9B30FF">解决方案： 只能降低比率，无法根除</font>
 
 <font color="#FF3030"><u>需要调整整体技术方案</u></font>
