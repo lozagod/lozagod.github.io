@@ -1,4 +1,145 @@
-<html>
-Android APJK_Analysis打点系统分析
+<h1 id="toc_0">Android PAJK_Analysis打点系统分析</h1>
 
-</html>
+<p><br /></p>
+
+<h2 id="toc_1">（一）需求</h2>
+
+<h3 id="toc_2">1、页面打点缺失</h3>
+
+<p>经确认，原产品需求中，不需要进行SDO的页面统计。</p>
+
+<p><font color="#9B30FF">解决方案：所有页面打点重新调用SDO内的方法</font></p>
+
+<pre><code class="language-none">public class SDOAnalyzeAgentInterface {
+    public static boolean mNeedToOpen = false;
+    
+    ...
+    
+    public static void onResume(Context context) {
+    SDOAnalyzeAgent.onResume(context);
+    }
+    }</code></pre>
+
+<p><font color="#9B30FF">合并调用至EventHelper.onResume()；</font></p>
+
+<p><br /></p>
+
+<h2 id="toc_3">（二）代码</h2>
+
+<h3 id="toc_4">1、主客存在多处打点代码不同调用</h3>
+
+<pre><code class="language-none">TCAgent.onEvent(mContext,
+    com.pingan.papd.datacenter.Constants.HEALTH_DAILY_POP_ACTIVITY,
+    com.pingan.papd.datacenter.Constants.HEALTH_DAILY_TASK_CLICK,
+    map);
+    SDOAnalyzeAgentInterface.onEventLabel(mContext,
+    com.pingan.papd.datacenter.Constants.HEALTH_DAILY_POP_ACTIVITY,
+    com.pingan.papd.datacenter.Constants.HEALTH_DAILY_TASK_CLICK);</code></pre>
+
+<pre><code class="language-none">GDTCAgent.onEvent(this, &quot;用户登陆&quot;, &quot;登陆失败&quot;);
+    TCAgent.onEvent(context, &quot;userRegisterFail&quot;);
+    SDOAnalyzeAgentInterface.onEvent(context, &quot;userRegisterFail&quot;);</code></pre>
+
+<h4 id="toc_5"><font color="#9B30FF">解决方案： 统一调用</font></h4>
+
+<p><img src="http://i12.tietuku.com/0b1fc39d9cc617ff.jpg" alt=""></p>
+    
+    <p>将 EventHelper 移到 PAJK_Analysis中</p>
+    
+    <p><img src="http://i12.tietuku.com/8fc0d5144113cb2c.jpg" alt=""></p>
+        
+        <h3 id="toc_6">2、现有上传逻辑</h3>
+        
+        <p><img src="http://i12.tietuku.com/c4ca262dd51e9e78.png" alt=""></p>
+            
+            <h4 id="toc_7"><font color="#9B30FF">可进行优化：</h4>
+            
+            <ul>
+                <li>增大本地缓存</li>
+                <li>增加事件类型</li>
+                <li>context提取数据优减</li>
+                <li>等等
+                    </font></li>
+            </ul>
+            
+            <p><br /></p>
+            
+            <h2 id="toc_8">（三）线上问题</h2>
+            
+            <h3 id="toc_9">1、覆盖率问题</h3>
+            
+            <p><font color="#CD3278">
+                <code>覆盖率 :（打点当日记录Uid）/（用户api请求数）</code>
+            </font></p>
+            
+            <p><img src="http://i5.tietuku.com/3ebc7c43eb073afb.png" alt=""></p>
+                
+                <h4 id="toc_10">1）本地缓存不足1K，无法触发上传</h4>
+                
+                <p><font color="#9B30FF">解决方案： 只能降低比率，无法根除</font></p>
+                
+                <p><font color="#FF3030"><u>需要调整整体技术方案</u></font></p>
+                
+                <h4 id="toc_11">2）用户没有网络，无法上传</h4>
+                
+                <p><font color="#9B30FF">解决方案：增加统计时长</font></p>
+                
+                <h4 id="toc_12">3）退出用户后，1K以内本地缓存数据未上传</h4>
+                
+                <p><font color="#9B30FF">解决方案：退出登录之后执行清空缓存</font></p>
+                
+                <pre><code class="language-none">private void doLogout(){
+                    if (getActivity() != null){
+                    new CacheManager().flushCache(getActivity());
+                    }
+                    ...
+                    }</code></pre>
+                
+                <h4 id="toc_13">4）用户部分api请求为后台service或h5接口</h4>
+                
+                <p><font color="#9B30FF">解决方案：统计方法基数 剔除后台接口或纯H5接口用户</font></p>
+                
+                <h4 id="toc_14">5）主客与外部医生日活总量存在一定差距</h4>
+                
+                <p><br /></p>
+                
+                <h2 id="toc_15">（四）展望</h2>
+                
+                <h3 id="toc_16">1、调整整体技术方案</h3>
+                
+                <ul>
+                    <li>增加按时间检测，每30秒增加shouldSendMessage函数执行</li>
+                    <li>urlConn.setRequestMethod(&quot;GET&quot;); 修改为POST</li>
+                    <li>本地数据缓存安全保护</li>
+                    <li>本地数据缓存事件合并</li>
+                </ul>
+                
+                <h3 id="toc_17">2、提供打点系统独立jar包</h3>
+                
+                <h3 id="toc_18">3、native接口优化</h3>
+                
+                <ul>
+                    <li>合并方法，增加入参等</li>
+                </ul>
+                
+                <p><font color="#3399ff"><code>目前:</code></font></p>
+                
+                <pre><code class="language-none">Map&lt;String,Object&gt; kv = new HashMap&lt;String,Object&gt;();
+                    kv.put(&quot;serviceType&quot;,getServiceType() == null ? &quot;&quot; : getServiceType().name());
+                    kv.put(&quot;DepartName&quot;,null == getDoctorInfo() ? &quot;&quot; : getDoctorInfo().deptName);
+                    kv.put(&quot;Doctor&quot;, null == getDoctorInfo() ? &quot;&quot; : getDoctorInfo().name);
+                    EventHelper.onEventMap(getActivity(), AnalyzeConstants.DOCTOR_ASK_NORMAL, null, kv);</code></pre>
+                
+                <p><font color="#3399ff"><code>期望:</code></font></p>
+                
+                <pre><code class="language-none">EventHelper.onEvent(mContext, AnalyzeConstants.DOCTOR_ASK_NORMAL, null,
+                    new Pair&lt;String, Object&gt;(&quot;serviceType&quot;, getServiceType().name()),
+                    new Pair&lt;String, Object&gt;(&quot;DepartName&quot;, getDoctorInfo().deptName),
+                    new Pair&lt;String, Object&gt;(&quot;Doctor&quot;, getDoctorInfo().name);</code></pre>
+                
+                <p><font color="#3399ff"><code>进阶:</code></font></p>
+                
+                <pre><code class="language-none">EventHelper.onEvent(mContext, AnalyzeConstants.DOCTOR_ASK_NORMAL, null,
+                    &quot;serviceType&quot; + getServiceType().name()),
+                    &quot;DepartName&quot; + getDoctorInfo().deptName),
+                    &quot;Doctor:&quot; + getDoctorInfo().name);</code></pre>
