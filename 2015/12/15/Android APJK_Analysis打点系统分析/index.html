@@ -5,26 +5,20 @@
   
   <title>打点系统分析 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Android PAJK_Analysis打点系统分析
-（一）需求1、页面打点缺失经确认，原产品需求中，不需要进行SDO的页面统计。
-解决方案：所有页面打点重新调用SDO内的方法123456789public class SDOAnalyzeAgentInterface &amp;#123;public static boolean mNeedToOpen = false;...public static">
+  <meta name="description" content="Android PAJK_Analysis打点系统分析">
 <meta property="og:type" content="article">
 <meta property="og:title" content="打点系统分析">
-<meta property="og:url" content="http://yoursite.com/2015/12/11/Android APJK_Analysis打点系统分析/index.html">
+<meta property="og:url" content="http://yoursite.com/2015/12/15/Android APJK_Analysis打点系统分析/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Android PAJK_Analysis打点系统分析
-（一）需求1、页面打点缺失经确认，原产品需求中，不需要进行SDO的页面统计。
-解决方案：所有页面打点重新调用SDO内的方法123456789public class SDOAnalyzeAgentInterface &amp;#123;public static boolean mNeedToOpen = false;...public static">
+<meta property="og:description" content="Android PAJK_Analysis打点系统分析">
 <meta property="og:image" content="http://i12.tietuku.com/0b1fc39d9cc617ff.jpg">
 <meta property="og:image" content="http://i12.tietuku.com/8fc0d5144113cb2c.jpg">
 <meta property="og:image" content="http://i12.tietuku.com/c4ca262dd51e9e78.png">
 <meta property="og:image" content="http://i5.tietuku.com/3ebc7c43eb073afb.png">
-<meta property="og:updated_time" content="2015-12-11T02:41:39.000Z">
+<meta property="og:updated_time" content="2015-12-15T03:20:55.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="打点系统分析">
-<meta name="twitter:description" content="Android PAJK_Analysis打点系统分析
-（一）需求1、页面打点缺失经确认，原产品需求中，不需要进行SDO的页面统计。
-解决方案：所有页面打点重新调用SDO内的方法123456789public class SDOAnalyzeAgentInterface &amp;#123;public static boolean mNeedToOpen = false;...public static">
+<meta name="twitter:description" content="Android PAJK_Analysis打点系统分析">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -72,8 +66,8 @@
       <div class="outer">
         <section id="main"><article id="post-Android APJK_Analysis打点系统分析" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/12/11/Android APJK_Analysis打点系统分析/" class="article-date">
-  <time datetime="2015-12-11T02:41:39.000Z" itemprop="datePublished">2015-12-11</time>
+    <a href="/2015/12/15/Android APJK_Analysis打点系统分析/" class="article-date">
+  <time datetime="2015-12-15T03:20:55.000Z" itemprop="datePublished">2015-12-15</time>
 </a>
     
   </div>
@@ -92,7 +86,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Android_PAJK_Analysis_u6253_u70B9_u7CFB_u7EDF_u5206_u6790"><a href="#Android_PAJK_Analysis_u6253_u70B9_u7CFB_u7EDF_u5206_u6790" class="headerlink" title="Android PAJK_Analysis打点系统分析"></a>Android PAJK_Analysis打点系统分析</h1><p><br></p>
+        <h1 id="Android_PAJK_Analysis_u6253_u70B9_u7CFB_u7EDF_u5206_u6790"><a href="#Android_PAJK_Analysis_u6253_u70B9_u7CFB_u7EDF_u5206_u6790" class="headerlink" title="Android PAJK_Analysis打点系统分析"></a>Android PAJK_Analysis打点系统分析</h1><a id="more"></a>
+<p><br></p>
 <h2 id="uFF08_u4E00_uFF09_u9700_u6C42"><a href="#uFF08_u4E00_uFF09_u9700_u6C42" class="headerlink" title="（一）需求"></a>（一）需求</h2><h3 id="1_u3001_u9875_u9762_u6253_u70B9_u7F3A_u5931"><a href="#1_u3001_u9875_u9762_u6253_u70B9_u7F3A_u5931" class="headerlink" title="1、页面打点缺失"></a>1、页面打点缺失</h3><p>经确认，原产品需求中，不需要进行SDO的页面统计。</p>
 <font color="#9B30FF">解决方案：所有页面打点重新调用SDO内的方法</font><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SDOAnalyzeAgentInterface</span> </span>&#123;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> mNeedToOpen = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">onResume</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">SDOAnalyzeAgent.onResume(context);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><br><font color="#9B30FF">合并调用至EventHelper.onResume()；</font>
 
@@ -147,7 +142,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/12/11/Android APJK_Analysis打点系统分析/" data-id="cii64jlgx000080t9alstgwz5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/12/15/Android APJK_Analysis打点系统分析/" data-id="cii64jlgx000080t9alstgwz5" class="article-share-link">Share</a>
       
       
     </footer>
@@ -156,11 +151,11 @@
     
 <nav id="article-nav">
   
-    <a href="/2015/12/14/Cordova /" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2015/12/15/Cordova /" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          (no title)
+          Cordova
         
       </div>
     </a>
@@ -202,11 +197,11 @@
       <ul>
         
           <li>
-            <a href="/2015/12/14/Cordova /">(no title)</a>
+            <a href="/2015/12/15/Cordova /">Cordova</a>
           </li>
         
           <li>
-            <a href="/2015/12/11/Android APJK_Analysis打点系统分析/">打点系统分析</a>
+            <a href="/2015/12/15/Android APJK_Analysis打点系统分析/">打点系统分析</a>
           </li>
         
           <li>
